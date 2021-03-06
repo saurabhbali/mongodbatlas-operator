@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"time"
 
+	knappekv1alpha1 "github.com/saurabhbali/mongodbatlas-operator/pkg/apis/knappek/v1alpha1"
 	dac "github.com/akshaykarle/go-http-digest-auth-client"
 	//ma "github.com/akshaykarle/go-mongodbatlas/mongodbatlas"
         "github.com/dghubble/sling"
@@ -88,16 +89,16 @@ func newDatabaseUserService(sling *sling.Sling) *DatabaseUserService {
 
 // Role allows the user to perform particular actions on the specified database.
 // A role on the admin database can include privileges that apply to the other databases as well.
-type Role struct {
-	DatabaseName   string `json:"databaseName,omitempty"`
-	CollectionName string `json:"collectionName,omitempty"`
-	RoleName       string `json:"roleName,omitempty"`
-}
+// type Role struct {
+// 	DatabaseName   string `json:"databaseName,omitempty"`
+// 	CollectionName string `json:"collectionName,omitempty"`
+// 	RoleName       string `json:"roleName,omitempty"`
+// }
 
-type Scope struct {
-        Name   string `json:"name,omitempty"`
-        Type   string `json:"type,omitempty"`
-}
+// type Scope struct {
+//         Name   string `json:"name,omitempty"`
+//         Type   string `json:"type,omitempty"`
+// }
 
 // DatabaseUser represents MongoDB users in your cluster.
 type DatabaseUser struct {
@@ -106,8 +107,8 @@ type DatabaseUser struct {
 	Password        string `json:"password,omitempty"`
 	DatabaseName    string `json:"databaseName,omitempty"`
 	DeleteAfterDate string `json:"deleteAfterDate,omitempty"`
-	Roles           []Role `json:"roles,omitempty"`
-	Scopes          []Scope `json:"scopes,omitempty"`
+	Roles           []knappekv1alpha1.Role `json:"roles,omitempty"`
+	Scopes          []knappekv1alpha1.Scope `json:"scopes,omitempty"`
 }
 
 // Client is a MongoDB Atlas client for making MongoDB API requests.
