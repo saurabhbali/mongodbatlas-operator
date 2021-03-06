@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"time"
 	"reflect"
-	
+
 	knappekv1alpha1 "github.com/saurabhbali/mongodbatlas-operator/pkg/apis/knappek/v1alpha1"
 	//corev1 "k8s.io/api/core/v1"
 	"github.com/go-logr/logr"
@@ -22,7 +22,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 	"sigs.k8s.io/controller-runtime/pkg/source"
-	// "go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -174,23 +174,29 @@ func (r *ReconcileMongoDBAtlasDatabase) Reconcile(request reconcile.Request) (re
 // 	}
 // }
 
-func createMongoDBAtlasDatabase(reqLogger logr.Logger, cr *knappekv1alpha1.MongoDBAtlasDatabase) error {
+//func createMongoDBAtlasDatabase(reqLogger logr.Logger, cr *knappekv1alpha1.MongoDBAtlasDatabase) error {
 // func createMongoDBAtlasDatabase(reqLogger logr.Logger, cr *MongoDBAtlasDatabase) error {
+func createMongoDBAtlasDatabase(reqLogger logr.Logger, cr *knappekv1alpha1.MongoDBAtlasDatabase) error {
 	hosta := cr.Spec.Host
 	clientdb, err := mongo.NewClient(options.Client().ApplyURI(hosta))
-    if err != nil {
-        return fmt.Errorf("Error creating new client %s", err)
-    }
-    ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-    err = clientdb.Connect(ctx)
-    if err != nil {
-        return fmt.Errorf("Error connecting Atlas cluster %s", err)
-    }
-    defer clientdb.Disconnect(ctx)
-
-    quickstartDatabase := clientdb.Database(cr.Spec.Database)
-    coll := quickstartDatabase.Collection("test")
-	_ = coll
+	if err != nil {
+		return fmt.Errorf("Error creating new client %s", err)
+	}
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	err = clientdb.Connect(ctx)
+	if err != nil {
+		return fmt.Errorf("Error connecting Atlas cluster %s", err)
+	}
+	defer clientdb.Disconnect(ctx)
+	quickstartDatabase := clientdb.Database(cr.Spec.Database)
+	coll := quickstartDatabase.Collection("test")
+	podcastResult, err := coll.InsertOne(ctx, bson.D{
+		{Key: "Sample", Value: "Sample Collection"},
+	})
+        if err != nil {
+                return fmt.Errorf("Error creating sample collection %s", err)
+        }
+	_ = podcastResult
 	return updateCRStatus(reqLogger, cr)
 }
 
