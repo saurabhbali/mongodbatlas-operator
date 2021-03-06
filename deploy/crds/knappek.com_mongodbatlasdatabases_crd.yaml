@@ -8,6 +8,8 @@ spec:
     kind: MongoDBAtlasDatabase
     listKind: MongoDBAtlasDatabaseList
     plural: mongodbatlasdatabases
+    shortNames:
+    - madb
     singular: mongodbatlasdatabase
   scope: Namespaced
   subresources:
