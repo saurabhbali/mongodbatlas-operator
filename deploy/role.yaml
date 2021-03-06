@@ -70,6 +70,7 @@ rules:
   - knappek.com
   resources:
   - '*'
+  - mongodbatlasdatabases
   verbs:
   - create
   - delete

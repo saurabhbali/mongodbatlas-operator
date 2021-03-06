@@ -8,8 +8,6 @@ spec:
     kind: MongoDBAtlasDatabaseUser
     listKind: MongoDBAtlasDatabaseUserList
     plural: mongodbatlasdatabaseusers
-    shortNames:
-    - madbuser
     singular: mongodbatlasdatabaseuser
   scope: Namespaced
   subresources:

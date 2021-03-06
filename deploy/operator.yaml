@@ -16,7 +16,7 @@ spec:
       containers:
         - name: mongodbatlas-operator
           # Replace this with the built image name
-          image: REPLACE_IMAGE
+          image: 461232396433.dkr.ecr.eu-west-1.amazonaws.com/images-to-check:0.196697
           command:
           - mongodbatlas-operator
           imagePullPolicy: Always
@@ -35,6 +35,6 @@ spec:
                   key: privateKey
                   name: example-monogdb-atlas-project
             - name: ATLAS_PUBLIC_KEY
-              value: toppaljd
+              value: vavxbrwu
             - name: RECONCILIATION_TIME
               value: "120"
