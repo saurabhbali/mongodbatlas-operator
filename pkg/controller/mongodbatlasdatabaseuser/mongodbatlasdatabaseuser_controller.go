@@ -119,7 +119,7 @@ func (r *ReconcileMongoDBAtlasDatabaseUser) Reconcile(request reconcile.Request)
 		return reconcile.Result{}, err
 	}
      //////////////////////
-	//projectName := atlasDatabaseUser.Spec.ProjectName
+	projectName := atlasDatabaseUser.Spec.ProjectName
 	////////////////////////////
 	// atlasProject := &knappekv1alpha1.MongoDBAtlasProject{}
 	// atlasProjectNamespacedName := types.NamespacedName{
@@ -133,15 +133,16 @@ func (r *ReconcileMongoDBAtlasDatabaseUser) Reconcile(request reconcile.Request)
 	// }
 
      ////////////////////////////////////////////////////////
-	// p, _, err := r.atlasClient.Projects.GetByName(projectName)
-	// if err != nil {
-	// 		return fmt.Errorf("Error getting Project %s: %s", projectName, err)
-	// 	}
+	p, _, err := r.atlasClient.Projects.GetByName(projectName)
+	if err != nil {
+		//return fmt.Errorf("Error getting Project %s: %s", projectName, err)
+		return reconcile.Result{}, err
+	}
 
 	// groupID := atlasProject.Status.ID
-	// groupID := p.ID
+	groupID := p.ID
 	///////////////////////////////////////////////////
-	groupID := "5f36a2c2eb8912567b7aa5bd"
+	//groupID := "5f36a2c2eb8912567b7aa5bd"
 	// Define default logger
 	reqLogger := log.WithValues("Request.Namespace", request.Namespace, "MongoDBAtlasDatabaseUser.Name", request.Name, "MongoDBAtlasDatabaseUser.GroupID", groupID)
 
@@ -182,6 +183,13 @@ func (r *ReconcileMongoDBAtlasDatabaseUser) Reconcile(request reconcile.Request)
 		return reconcile.Result{RequeueAfter: r.reconciliationConfig.Time}, nil
 	}
 
+	secret := r.newSecretForCR(atlasDatabaseUser, passwrd)
+
+        // Set atlasDatabaseUser instance as the owner and controller
+        if err := controllerutil.SetControllerReference(atlasDatabaseUser, secret, r.scheme); err != nil {
+                return reconcile.Result{}, err
+        }
+
 	// update existing MongoDBAtlasDatabaseUser
 	isMongoDBAtlasDatabaseUserToBeUpdated := knappekv1alpha1.IsMongoDBAtlasDatabaseUserToBeUpdated(atlasDatabaseUser.Spec.MongoDBAtlasDatabaseUserRequestBody, atlasDatabaseUser.Status)
 	if isMongoDBAtlasDatabaseUserToBeUpdated {
@@ -194,16 +202,29 @@ func (r *ReconcileMongoDBAtlasDatabaseUser) Reconcile(request reconcile.Request)
 		if err != nil {
 			return reconcile.Result{}, err
 		}
+
+		// Check if this Secret already exists
+		//foundup := &corev1.Secret{}
+		//err = r.client.Get(context.TODO(), types.NamespacedName{Name: secret.Name, Namespace: secret.Namespace}, foundup)
+		err = r.client.Create(context.TODO(), secret)
+		if err != nil && errors.IsAlreadyExists(err) {
+			reqLogger.Info("Updating  already existing secret", "Secret.Namespace", secret.Namespace, "Secret.Name", secret.Name)
+			err = r.client.Update(context.TODO(), secret)
+			if err != nil {
+				return reconcile.Result{}, err
+			}
+		}
+
 		// Requeue to periodically reconcile the CR MongoDBAtlasDatabaseUser in order to recreate a manually deleted Atlas DatabaseUser
 		return reconcile.Result{RequeueAfter: r.reconciliationConfig.Time}, nil
 	}
 
-	secret := r.newSecretForCR(atlasDatabaseUser, passwrd)
+	//secret := r.newSecretForCR(atlasDatabaseUser, passwrd)
 
 	// Set atlasDatabaseUser instance as the owner and controller
-	if err := controllerutil.SetControllerReference(atlasDatabaseUser, secret, r.scheme); err != nil {
-		return reconcile.Result{}, err
-	}
+	//if err := controllerutil.SetControllerReference(atlasDatabaseUser, secret, r.scheme); err != nil {
+	//	return reconcile.Result{}, err
+	//}
 
 	// Check if this Secret already exists
 	found := &corev1.Secret{}

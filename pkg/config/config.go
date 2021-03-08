@@ -45,13 +45,13 @@ func relevantError(httpError error, apiError APIError) error {
 }
 
 // Project represents a projecting connection information in MongoDB.
-//type Project struct {
-//	ID           string `json:"id,omitempty"`
-//	Name         string `json:"name,omitempty"`
-//	OrgID        string `json:"orgId,omitempty"`
-//	Created      string `json:"created,omitempty"`
-//	ClusterCount int    `json:"clusterCount,omitempty"`
-//}
+type Project struct {
+	ID           string `json:"id,omitempty"`
+	Name         string `json:"name,omitempty"`
+	OrgID        string `json:"orgId,omitempty"`
+	Created      string `json:"created,omitempty"`
+	ClusterCount int    `json:"clusterCount,omitempty"`
+}
 
 // ProjectService provides methods for accessing MongoDB Atlas Projects API endpoints.
 type ProjectService struct {
@@ -67,13 +67,13 @@ func newProjectService(sling *sling.Sling) *ProjectService {
 
 // GetByName information about the project associated to group name
 // https://docs.atlas.mongodb.com/reference/api/project-get-one-by-name/
-//func (c *ProjectService) GetByName(name string) (*Project, *http.Response, error) {
-//	project := new(Project)
-//	apiError := new(APIError)
-//	path := fmt.Sprintf("byName/%s", name)
-//	resp, err := c.sling.New().Get(path).Receive(project, apiError)
-//	return project, resp, relevantError(err, *apiError)
-//}
+func (c *ProjectService) GetByName(name string) (*Project, *http.Response, error) {
+	project := new(Project)
+	apiError := new(APIError)
+	path := fmt.Sprintf("byName/%s", name)
+	resp, err := c.sling.New().Get(path).Receive(project, apiError)
+	return project, resp, relevantError(err, *apiError)
+}
 
 // DatabaseUserService provides methods for accessing MongoDB Atlas DatabaseUsers API endpoints.
 type DatabaseUserService struct {

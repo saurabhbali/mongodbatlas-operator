@@ -16,7 +16,7 @@ spec:
       containers:
         - name: mongodbatlas-operator
           # Replace this with the built image name
-          image: 461232396433.dkr.ecr.eu-west-1.amazonaws.com/images-to-check:0.9898
+          image: 461232396433.dkr.ecr.eu-west-1.amazonaws.com/images-to-check:0.9897
           command:
           - mongodbatlas-operator
           imagePullPolicy: Always

@@ -129,7 +129,7 @@ func (r *ReconcileMongoDBAtlasDatabase) Reconcile(request reconcile.Request) (re
 		if err != nil {
 			return reconcile.Result{}, err
 		}
-		return reconcile.Result{RequeueAfter: r.reconciliationConfig.Time}, nil
+		return reconcile.Result{}, nil
 	}
 	// // Check if this Pod already exists
 	// found := &corev1.Pod{}
@@ -197,6 +197,7 @@ func createMongoDBAtlasDatabase(reqLogger logr.Logger, cr *knappekv1alpha1.Mongo
                 return fmt.Errorf("Error creating sample collection %s", err)
         }
 	_ = podcastResult
+	reqLogger.Info("Database created.")
 	return updateCRStatus(reqLogger, cr)
 }
 
